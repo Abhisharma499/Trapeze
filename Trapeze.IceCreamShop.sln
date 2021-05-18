@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trapeze.IceCreamShop.Api", "src\Trapeze.IceCreamShop.Api\Trapeze.IceCreamShop.Api.csproj", "{6E23CA9B-7BDB-46B2-97AD-FAD40A0764D5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trapeze.IceCreamShop", "src\Trapeze.IceCreamShop\Trapeze.IceCreamShop.csproj", "{83A4592A-EF54-4BF6-8582-407FA6264644}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trapeze.IceCreamShop.Data", "src\Trapeze.IceCreamShop.Data\Trapeze.IceCreamShop.Data.csproj", "{83E8903A-9893-4A60-A28E-0667B0A55A9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1780F471-9D7B-4608-8922-FF4F471244E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trapeze.IceCreamShop.Data.Tests", "test\Trapeze.IceCreamShop.Data.Tests\Trapeze.IceCreamShop.Data.Tests.csproj", "{B90C514C-A05D-47BA-B303-104BB1A2539D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D0945E16-A620-44A8-AE08-F4259BB2031F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E23CA9B-7BDB-46B2-97AD-FAD40A0764D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E23CA9B-7BDB-46B2-97AD-FAD40A0764D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E23CA9B-7BDB-46B2-97AD-FAD40A0764D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E23CA9B-7BDB-46B2-97AD-FAD40A0764D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83A4592A-EF54-4BF6-8582-407FA6264644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83A4592A-EF54-4BF6-8582-407FA6264644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83A4592A-EF54-4BF6-8582-407FA6264644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83A4592A-EF54-4BF6-8582-407FA6264644}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83E8903A-9893-4A60-A28E-0667B0A55A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83E8903A-9893-4A60-A28E-0667B0A55A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83E8903A-9893-4A60-A28E-0667B0A55A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83E8903A-9893-4A60-A28E-0667B0A55A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B90C514C-A05D-47BA-B303-104BB1A2539D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B90C514C-A05D-47BA-B303-104BB1A2539D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B90C514C-A05D-47BA-B303-104BB1A2539D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B90C514C-A05D-47BA-B303-104BB1A2539D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B90C514C-A05D-47BA-B303-104BB1A2539D} = {1780F471-9D7B-4608-8922-FF4F471244E2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5F0896CD-A35E-4E5B-A16A-0A76E1298BC4}
+	EndGlobalSection
+EndGlobal

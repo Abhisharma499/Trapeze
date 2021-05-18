@@ -1,0 +1,35 @@
+# Folders
+artifacts/
+[Bb]in/
+[Oo]bj/
+.dotnet/
+.nuget/
+.packages/
+.tools/
+.vs/
+.vscode/
+node_modules/
+dist/
+
+#Specific File Types
+*.dll
+*.exe
+*.idb
+*.lib
+*.log
+*.pch
+*.pdb
+*.pidb
+*.psess
+*.res
+*.snk
+*.so
+*.suo
+*.user
+*.userprefs
+*.development.json
+
+#Specific Files
+launchSettings.json
+
+
