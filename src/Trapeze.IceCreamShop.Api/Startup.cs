@@ -22,6 +22,7 @@ namespace Trapeze.IceCreamShop.Api
     using Microsoft.Extensions.Hosting;
     using Trapeze.IceCreamShop.Api.Filters;
     using Trapeze.IceCreamShop.Data;
+    using Trapeze.IceCreamShop.Data.BAL;
     using Trapeze.IceCreamShop.Data.DAL;
 
     /// <summary>
@@ -69,7 +70,8 @@ namespace Trapeze.IceCreamShop.Api
                 options.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
             });
 
-            services.AddTransient<IiceCreamService, IiceCreamService>();
+            services.AddTransient<IIceCreamDataService, IceCreamDataService>();
+            services.AddTransient<IIceCreamBusinessService, IceCreamBusinessService>();
 
             services.AddDbContext<IceCreamDbContext>(options => options.UseSqlite("Data Source=icecream.db"));
 

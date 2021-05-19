@@ -5,6 +5,6 @@
 
     public interface IIceCreamDataService
     {
-        Task<PurchaseInformation> PurchaseIceCream(IceCreamInformation iceCreamModel);
+        Task<bool> InsertIntoIceCreamInformation(IceCreamInformation iceCreamInformation);
     }
 }

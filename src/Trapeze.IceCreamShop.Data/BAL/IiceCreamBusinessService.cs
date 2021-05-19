@@ -8,17 +8,17 @@
 
     public interface IIceCreamBusinessService
     {
+        Task<PurchaseInformation> PurchaseIceCream(IceCreamInformation iceCreamModel);
+
         Task<decimal> GetTotalCost(IceCreamInformation iceCreamModel);
 
         Task<decimal> CalculateBaseCost(IceCreamBase iceCreamBase);
 
         Task<decimal> CalculateFlavoursCost(ICollection<FlavourInformation> flavours);
 
-        bool ValidateNumberOfScoops(ICollection<FlavourInformation> flavours);
+        Task<bool> ValidateNumberOfScoops(ICollection<FlavourInformation> flavours);
 
         Task<bool> ValidatePurChaseTime(DateTime puchaseTime);
-
-        Task<PurchaseInformation> PurchaseIceCream(IceCreamInformation iceCreamModel);
 
         Task<bool> ValidatePurchaseAmount(decimal userPurchaseAmount, decimal calculatedPurchaseAmount);
 
@@ -28,8 +28,10 @@
 
         Task<bool> CheckIfIceCreamFlavourValid(IceCreamFlavour iceCreamFlavour);
 
-        Task<bool> ValidateIceCreamAndFlavourCombination(IReadOnlyCollection<FlavourInformation> flavours, IceCreamBase iceCreamBase);
+        Task<bool> ValidateIceCreamAndFlavourCombination(ICollection<FlavourInformation> flavours, IceCreamBase iceCreamBase);
 
-        Task<bool> ValidateCookieDoughflavourtheSugarConeBase(FlavourInformation flavour, IceCreamBase iceCreamBase); Task<bool> ValidateFlavourCombination(IReadOnlyCollection<FlavourInformation> allVailableflavours, IReadOnlyCollection<FlavourInformation> selectedFlavours);
+        Task<bool> ValidateCookieDoughflavourtheSugarConeBase(FlavourInformation flavour, IceCreamBase iceCreamBase);
+
+        Task<bool> ValidateFlavourCombination(ICollection<IceCreamFlavour> allVailableflavours, ICollection<IceCreamFlavour> selectedFlavours);
     }
 }

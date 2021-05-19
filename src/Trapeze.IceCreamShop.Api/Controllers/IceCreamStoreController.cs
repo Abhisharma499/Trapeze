@@ -7,6 +7,7 @@ namespace Trapeze.IceCreamShop.Api.Controllers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Trapeze.IceCreamShop.Data.BAL;
     using Trapeze.IceCreamShop.Data.DAL;
     using Trapeze.IceCreamShop.Data.Entities;
 
@@ -18,13 +19,13 @@ namespace Trapeze.IceCreamShop.Api.Controllers
     public class IceCreamStoreController : ControllerBase
     {
 
-        private readonly IIceCreamDataService _iIceCreamService;
+        private readonly IIceCreamBusinessService _IIceCreamBusinessService;
         /// <summary>
         /// Initializes a new instance of the <see cref="IceCreamStoreController"/> class.
         /// </summary>
-        public IceCreamStoreController(IIceCreamDataService iIceCreamService)
+        public IceCreamStoreController(IIceCreamBusinessService IIceCreamBusinessService)
         {
-            _iIceCreamService = iIceCreamService;
+            _IIceCreamBusinessService = IIceCreamBusinessService;
         }
 
         [HttpPost]
@@ -32,7 +33,7 @@ namespace Trapeze.IceCreamShop.Api.Controllers
         {
             try
             {
-                PurchaseInformation purchaseModel = await _iIceCreamService.PurchaseIceCream(model).ConfigureAwait(true);
+                PurchaseInformation purchaseModel = await _IIceCreamBusinessService.PurchaseIceCream(model).ConfigureAwait(true);
 
                 if (purchaseModel != null && purchaseModel.IsSuccess)
                 {
