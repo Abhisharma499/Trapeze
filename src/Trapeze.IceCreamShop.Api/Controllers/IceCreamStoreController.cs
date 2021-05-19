@@ -35,7 +35,7 @@ namespace Trapeze.IceCreamShop.Api.Controllers
             {
                 PurchaseInformation purchaseModel = await _IIceCreamBusinessService.PurchaseIceCream(model).ConfigureAwait(true);
 
-                if (purchaseModel != null && purchaseModel.IsSuccess)
+                if (purchaseModel != null && purchaseModel.IsSuccess && purchaseModel.State == Enums.PurchaseStates.PurchaseSucess)
                 {
                     return new JsonResult(new { purchaseModel })
                     {
@@ -44,7 +44,7 @@ namespace Trapeze.IceCreamShop.Api.Controllers
                 }
                 else
                 {
-                    return new JsonResult("Something went wrong. Please try again later.")
+                    return new JsonResult(new { Error= purchaseModel.State.ToString() })
                     {
                         StatusCode = StatusCodes.Status400BadRequest
                     };

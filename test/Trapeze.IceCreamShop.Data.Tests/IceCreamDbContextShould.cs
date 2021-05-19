@@ -4,13 +4,13 @@
 
 namespace Trapeze.PASS.Address.UnitTests
 {
-    using FluentAssertions;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
+    using FluentAssertions;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Trapeze.IceCreamShop.Data;
     using Trapeze.IceCreamShop.Data.DependencyInjection;
     using Trapeze.IceCreamShop.Data.Entities;

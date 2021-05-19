@@ -219,6 +219,7 @@
                 if (isInserted)
                 {
                     purchaseSucessViewModel.IsSuccess = true;
+                    purchaseSucessViewModel.State = PurchaseStates.PurchaseSucess;
                 }
 
                 return await Task.FromResult(purchaseSucessViewModel).ConfigureAwait(false);
