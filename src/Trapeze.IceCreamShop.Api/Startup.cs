@@ -4,22 +4,20 @@
 
 namespace Trapeze.IceCreamShop.Api
 {
-    using System.Net.Http;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
     using CorrelationId;
     using CorrelationId.Abstractions;
     using CorrelationId.DependencyInjection;
     using Hellang.Middleware.ProblemDetails;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc.Authorization;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using System.Net.Http;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using Trapeze.IceCreamShop.Api.Filters;
     using Trapeze.IceCreamShop.Data;
     using Trapeze.IceCreamShop.Data.BAL;
