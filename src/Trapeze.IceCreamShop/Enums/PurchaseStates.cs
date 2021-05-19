@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Trapeze.IceCreamShop.Enums
+﻿namespace Trapeze.IceCreamShop.Enums
 {
-   public enum PurchaseStates
+    public enum PurchaseStates
     {
-        PurchaseSucess,
-        PurchaseAmountInvalid,
-        PurchaseAmountLessThanCost,
-        PurchaseTimeInvalid,
-        PurchaseBaseInvalid,
-        PurchaseFlavourInvalid,
-        PurchaseNumberOfScoopsInvalid,
-        PurchaseBaseFlavourCombinationInvalid,
-        PurchaseFlavourCombinationInvalid,
-        PurchaseDataBaseInsertionError
-
+        Sucess,
+        AmountInvalid,
+        AmountLessThanCost,
+        TimeInvalid,
+        BaseInvalid,
+        FlavourInvalid,
+        NumberOfScoopsInvalid,
+        BaseFlavourCombinationInvalid,
+        FlavourCombinationInvalid,
+        DataBaseInsertionError,
+        RefundAmountInvalid,
     }
 }

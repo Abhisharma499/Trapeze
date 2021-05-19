@@ -35,9 +35,9 @@ namespace Trapeze.IceCreamShop.Api.Controllers
             {
                 PurchaseInformation purchaseModel = await _iIceCreamBusinessService.PurchaseIceCream(model).ConfigureAwait(true);
 
-                if (purchaseModel != null && purchaseModel.IsSuccess && purchaseModel.State == Enums.PurchaseStates.PurchaseSucess)
+                if (purchaseModel != null && purchaseModel.IsSuccess && purchaseModel.State == Enums.PurchaseStates.Sucess)
                 {
-                    purchaseModel.NameOfBuyer = GetUserName();
+                    purchaseModel.NameOfBuyer = await _iIceCreamBusinessService.GetUserName(HttpContext).ConfigureAwait(false);
 
                     return new JsonResult(new { purchaseModel })
                     {

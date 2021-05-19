@@ -70,10 +70,9 @@ namespace Trapeze.IceCreamShop.Api
                 options.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
             });
 
-            services.AddTransient<IIceCreamDataService, IceCreamDataService>();
-            services.AddTransient<IIceCreamBusinessService, IceCreamBusinessService>();
-
-            services.AddDbContext<IceCreamDbContext>(options => options.UseSqlite("Data Source=icecream.db"));
+            services.AddScoped<IIceCreamDataService, IceCreamDataService>();
+            services.AddScoped<IIceCreamBusinessService, IceCreamBusinessService>();
+            services.AddDbContext<IceCreamDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("IceCreamDb")));
 
             services.AddControllers()
                 .AddJsonOptions(options =>

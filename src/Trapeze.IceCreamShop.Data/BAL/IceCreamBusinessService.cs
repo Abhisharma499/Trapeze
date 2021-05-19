@@ -1,8 +1,10 @@
 ﻿namespace Trapeze.IceCreamShop.Data.BAL
 {
+    using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Threading.Tasks;
     using Trapeze.IceCreamShop.Data.Entities;
     using Trapeze.IceCreamShop.Enums;
@@ -16,33 +18,11 @@
             _iceCreamDataService = iceCreamDataService;
         }
 
-        public async Task<decimal> GetTotalCost(IceCreamInformation iceCreamModel)
-        {
-            try
-            {
-                if (iceCreamModel == null)
-                {
-                    throw new Exception("The Ice cream model cannot be null");
-                }
-                else
-                {
-                    decimal baseCost = await CalculateBaseCost(iceCreamModel.Base.IceCreamBase).ConfigureAwait(false);
-                    decimal flavourCost = await CalculateFlavoursCost(iceCreamModel.Flavours.ToList()).ConfigureAwait(false);
-
-                    return baseCost + flavourCost;
-                }
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
         public async Task<decimal> CalculateBaseCost(IceCreamBase iceCreamBase)
         {
             try
             {
-                if (iceCreamBase == Enums.IceCreamBase.WaffleCone)
+                if (iceCreamBase == IceCreamBase.WaffleCone)
                 {
                     return await Task.FromResult(Constants.PriceWaffleCone).ConfigureAwait(false);
                 }
@@ -135,7 +115,7 @@
                 if (!await ValidatePurChaseTime(DateTime.Now).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseTimeInvalid;
+                    purchaseSucessViewModel.State = PurchaseStates.TimeInvalid;
                     return purchaseSucessViewModel;
                 }
 
@@ -143,7 +123,7 @@
                 if (!await CheckIfIceCreamBaseValid(iceCreamModel.Base.IceCreamBase).ConfigureAwait(true))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseBaseInvalid;
+                    purchaseSucessViewModel.State = PurchaseStates.BaseInvalid;
                     return purchaseSucessViewModel;
                 }
 
@@ -153,7 +133,7 @@
                     if (!await CheckIfIceCreamFlavourValid(flavour.IceCreamFlavour).ConfigureAwait(true))
                     {
                         purchaseSucessViewModel.IsSuccess = false;
-                        purchaseSucessViewModel.State = PurchaseStates.PurchaseFlavourInvalid;
+                        purchaseSucessViewModel.State = PurchaseStates.FlavourInvalid;
                         return purchaseSucessViewModel;
                     }
                 }
@@ -162,7 +142,7 @@
                 if (!await ValidateNumberOfScoops(iceCreamModel.Flavours).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseNumberOfScoopsInvalid;
+                    purchaseSucessViewModel.State = PurchaseStates.NumberOfScoopsInvalid;
                     return purchaseSucessViewModel;
                 }
 
@@ -170,7 +150,7 @@
                 if (!await ValidateIceCreamAndFlavourCombination(iceCreamModel.Flavours, iceCreamModel.Base.IceCreamBase).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseBaseFlavourCombinationInvalid;
+                    purchaseSucessViewModel.State = PurchaseStates.BaseFlavourCombinationInvalid;
                     return purchaseSucessViewModel;
                 }
 
@@ -180,7 +160,7 @@
                     if (!await ValidateCookieDoughflavourtheSugarConeBase(flavour, iceCreamModel.Base.IceCreamBase).ConfigureAwait(false))
                     {
                         purchaseSucessViewModel.IsSuccess = false;
-                        purchaseSucessViewModel.State = PurchaseStates.PurchaseBaseFlavourCombinationInvalid;
+                        purchaseSucessViewModel.State = PurchaseStates.BaseFlavourCombinationInvalid;
                         return purchaseSucessViewModel;
                     }
                 }
@@ -189,7 +169,7 @@
                 if (!await ValidateFlavourCombination(iceCreamModel.Flavours.Select(x => x.IceCreamFlavour).ToList(), Constants.FlavoursRestrictedTogether).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseFlavourCombinationInvalid;
+                    purchaseSucessViewModel.State = PurchaseStates.FlavourCombinationInvalid;
                     return purchaseSucessViewModel;
                 }
 
@@ -205,7 +185,7 @@
                     if (!await ValidateFlavourCombination(flavours, Constants.FlavoursRestrictedTogether2).ConfigureAwait(false))
                     {
                         purchaseSucessViewModel.IsSuccess = false;
-                        purchaseSucessViewModel.State = PurchaseStates.PurchaseFlavourCombinationInvalid;
+                        purchaseSucessViewModel.State = PurchaseStates.FlavourCombinationInvalid;
                         return purchaseSucessViewModel;
                     }
                 }
@@ -218,23 +198,33 @@
                 if (!await ValidatePurchaseAmount(iceCreamModel.PurchaseAmount, baseCost + flavourCost).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseAmountLessThanCost;
+                    purchaseSucessViewModel.State = PurchaseStates.AmountLessThanCost;
                     purchaseSucessViewModel.CostOfIceCream = baseCost + flavourCost;
                     return purchaseSucessViewModel;
                 }
 
-                purchaseSucessViewModel.Refund = await CalculateRefund(iceCreamModel.PurchaseAmount, baseCost + flavourCost).ConfigureAwait(false);
+                decimal? refundAmount = await CalculateRefund(iceCreamModel.PurchaseAmount, baseCost + flavourCost).ConfigureAwait(false);
+
+                if (refundAmount == null)
+                {
+                    purchaseSucessViewModel.State = PurchaseStates.RefundAmountInvalid;
+                    return purchaseSucessViewModel;
+                }
+                else
+                {
+                    purchaseSucessViewModel.Refund = refundAmount.Value;
+                }
 
                 bool isInserted = await _iceCreamDataService.InsertIntoIceCreamInformation(iceCreamModel).ConfigureAwait(false);
 
                 if (isInserted)
                 {
                     purchaseSucessViewModel.IsSuccess = true;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseSucess;
+                    purchaseSucessViewModel.State = PurchaseStates.Sucess;
                 }
                 else
                 {
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseDataBaseInsertionError;
+                    purchaseSucessViewModel.State = PurchaseStates.DataBaseInsertionError;
                 }
 
                 return await Task.FromResult(purchaseSucessViewModel).ConfigureAwait(false);
@@ -276,7 +266,7 @@
             }
         }
 
-        public async Task<decimal> CalculateRefund(decimal userPurchaseAmount, decimal calculatedPurchaseAmount)
+        public async Task<decimal?> CalculateRefund(decimal userPurchaseAmount, decimal calculatedPurchaseAmount)
         {
             try
             {
@@ -284,7 +274,7 @@
 
                 if (refund < 0)
                 {
-                    throw new Exception("Refund cannot be negative");
+                    return null;
                 }
 
                 return await Task.FromResult(userPurchaseAmount - calculatedPurchaseAmount).ConfigureAwait(false);
@@ -369,25 +359,37 @@
         {
             switch (purchase?.State)
             {
-                case PurchaseStates.PurchaseAmountInvalid:
+                case PurchaseStates.AmountInvalid:
                     return await Task.FromResult($"Invalid purchaseAmount!. Please check the purchase Amount {purchase.IceCreamOrder.PurchaseAmount}").ConfigureAwait(false);
-                case PurchaseStates.PurchaseAmountLessThanCost:
+                case PurchaseStates.AmountLessThanCost:
                     return await Task.FromResult($"Invalid purchaseAmount!. Purchase Amount {purchase.IceCreamOrder.PurchaseAmount} must be greater than the cost amount {purchase.CostOfIceCream}.").ConfigureAwait(false);
-                case PurchaseStates.PurchaseTimeInvalid:
+                case PurchaseStates.TimeInvalid:
                     return await Task.FromResult($"Invalid purchase time. Please visit between store hours.").ConfigureAwait(false);
-                case PurchaseStates.PurchaseBaseInvalid:
+                case PurchaseStates.BaseInvalid:
                     return await Task.FromResult($"Invalid ice cream base. Please select a valid base.").ConfigureAwait(false);
-                case PurchaseStates.PurchaseFlavourInvalid:
+                case PurchaseStates.FlavourInvalid:
                     return await Task.FromResult($"Invalid ice cream flavour. Please select a valid flavour.").ConfigureAwait(false);
-                case PurchaseStates.PurchaseNumberOfScoopsInvalid:
+                case PurchaseStates.NumberOfScoopsInvalid:
                     return await Task.FromResult($"Invalid number of scoops. Please select valid number of scoops").ConfigureAwait(false);
-                case PurchaseStates.PurchaseBaseFlavourCombinationInvalid:
+                case PurchaseStates.BaseFlavourCombinationInvalid:
                     return await Task.FromResult($"Invalid base and flavour combination. Please select a different combination").ConfigureAwait(false);
-                case PurchaseStates.PurchaseFlavourCombinationInvalid:
+                case PurchaseStates.FlavourCombinationInvalid:
                     return await Task.FromResult($"Invalid flavour combination. Please select a different combination").ConfigureAwait(false);
                 default:
                     return string.Empty;
             }
+        }
+
+        public async Task<string> GetUserName(HttpContext httpContext)
+        {
+            string authHeader = httpContext?.Request.Headers["Authorization"];
+            string encodedUserNamePassword = authHeader.Substring("Basic".Length).Trim();
+            Encoding encoding = Encoding.GetEncoding("UTF-8");
+            string userNameAndPassword = encoding.GetString(Convert.FromBase64String(encodedUserNamePassword));
+            int index = userNameAndPassword.IndexOf(":");
+            var userName = userNameAndPassword.Substring(0, index);
+
+            return await Task.FromResult(userName).ConfigureAwait(false);
         }
     }
 }

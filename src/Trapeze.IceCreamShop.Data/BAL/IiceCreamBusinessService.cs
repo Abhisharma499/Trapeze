@@ -1,7 +1,9 @@
 ﻿namespace Trapeze.IceCreamShop.Data.BAL
 {
+    using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using Trapeze.IceCreamShop.Data.Entities;
     using Trapeze.IceCreamShop.Enums;
@@ -9,8 +11,6 @@
     public interface IIceCreamBusinessService
     {
         Task<PurchaseInformation> PurchaseIceCream(IceCreamInformation iceCreamModel);
-
-        Task<decimal> GetTotalCost(IceCreamInformation iceCreamModel);
 
         Task<decimal> CalculateBaseCost(IceCreamBase iceCreamBase);
 
@@ -24,7 +24,7 @@
 
         Task<bool> CheckIfIceCreamBaseValid(IceCreamBase iceCreamBase);
 
-        Task<decimal> CalculateRefund(decimal userPurchaseAmount, decimal calculatedPurchaseAmount);
+        Task<decimal?> CalculateRefund(decimal userPurchaseAmount, decimal calculatedPurchaseAmount);
 
         Task<bool> CheckIfIceCreamFlavourValid(IceCreamFlavour iceCreamFlavour);
 
@@ -35,5 +35,7 @@
         Task<bool> ValidateFlavourCombination(ICollection<IceCreamFlavour> allVailableflavours, ICollection<IceCreamFlavour> selectedFlavours);
 
         Task<string> HandleErrorState(PurchaseInformation purchaseState);
+
+        Task<string> GetUserName(HttpContext httpContext);
     }
 }
