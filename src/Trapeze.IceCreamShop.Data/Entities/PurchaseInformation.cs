@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Serialization;
-using Trapeze.IceCreamShop.Enums;
-
-namespace Trapeze.IceCreamShop.Data.Entities
+﻿namespace Trapeze.IceCreamShop.Data.Entities
 {
+    using System.Text.Json.Serialization;
+    using Trapeze.IceCreamShop.Enums;
+
     public class PurchaseInformation
     {
         public decimal Refund { get; set; }
@@ -12,5 +12,7 @@ namespace Trapeze.IceCreamShop.Data.Entities
 
         [JsonIgnore]
         public PurchaseStates State { get; set; }
+
+        public string NameOfBuyer { get; set; }
     }
 }
