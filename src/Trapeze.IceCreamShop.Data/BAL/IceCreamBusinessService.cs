@@ -9,13 +9,10 @@
 
     public class IceCreamBusinessService : IIceCreamBusinessService
     {
-        private readonly IceCreamDbContext _context;
-
         private readonly DAL.IIceCreamDataService _iceCreamDataService;
 
-        public IceCreamBusinessService(IceCreamDbContext ctx, DAL.IIceCreamDataService iceCreamDataService)
+        public IceCreamBusinessService(DAL.IIceCreamDataService iceCreamDataService)
         {
-            _context = ctx;
             _iceCreamDataService = iceCreamDataService;
         }
 
@@ -35,21 +32,28 @@
                     return baseCost + flavourCost;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
         public async Task<decimal> CalculateBaseCost(IceCreamBase iceCreamBase)
         {
-            if (iceCreamBase == Enums.IceCreamBase.WaffleCone)
+            try
             {
-                return await Task.FromResult(Constants.PriceWaffleCone).ConfigureAwait(false);
+                if (iceCreamBase == Enums.IceCreamBase.WaffleCone)
+                {
+                    return await Task.FromResult(Constants.PriceWaffleCone).ConfigureAwait(false);
+                }
+                else
+                {
+                    return await Task.FromResult(Constants.PriceNonWaffleCone).ConfigureAwait(false);
+                }
             }
-            else
+            catch
             {
-                return await Task.FromResult(Constants.PriceNonWaffleCone).ConfigureAwait(false);
+                throw;
             }
         }
 
@@ -57,12 +61,7 @@
         {
             try
             {
-                if (flavours == null)
-                {
-                    throw new Exception("The Ice cream model cannot be null");
-                }
-
-                switch (flavours.Count)
+                switch (flavours?.Count)
                 {
                     case 1:
                         return await Task.FromResult(2).ConfigureAwait(false);
@@ -73,28 +72,35 @@
                     case 4:
                         return await Task.FromResult(3.8M).ConfigureAwait(false);
                     default:
-                        throw new Exception("Maximum flavour count exceeded");
+                        return await Task.FromResult(0).ConfigureAwait(false);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
         public async Task<bool> ValidateNumberOfScoops(ICollection<FlavourInformation> flavours)
         {
-            if (flavours == null)
+            try
             {
+                if (flavours == null)
+                {
+                    return await Task.FromResult(false).ConfigureAwait(false);
+                }
+
+                if (flavours.Count >= Constants.MinFlavourCountAllowed && flavours.Count <= Constants.MaxFlavourCountAllowed)
+                {
+                    return await Task.FromResult(true).ConfigureAwait(false);
+                }
+
                 return await Task.FromResult(false).ConfigureAwait(false);
             }
-
-            if (flavours.Count >= Constants.MinFlavourCountAllowed && flavours.Count <= Constants.MaxFlavourCountAllowed)
+            catch
             {
-                return await Task.FromResult(true).ConfigureAwait(false);
+                throw;
             }
-
-            return await Task.FromResult(false).ConfigureAwait(false);
         }
 
         public async Task<bool> ValidatePurChaseTime(DateTime puchaseTime)
@@ -105,17 +111,18 @@
 
                 bool isTimeValid = puchaseTime.TimeOfDay >= Constants.StartTimeOfStore && puchaseTime.TimeOfDay <= Constants.EndTimeOfStore;
 
-                return await Task.FromResult(isDayValid && isDayValid).ConfigureAwait(false);
+                return await Task.FromResult(isDayValid && isTimeValid).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Invalid purchase time. Please try in store hours.");
+                throw;
             }
         }
 
         public async Task<PurchaseInformation> PurchaseIceCream(IceCreamInformation iceCreamModel)
         {
             PurchaseInformation purchaseSucessViewModel = new PurchaseInformation();
+            purchaseSucessViewModel.IceCreamOrder = iceCreamModel;
 
             if (iceCreamModel == null)
             {
@@ -125,7 +132,7 @@
             try
             {
                 // The ice cream store is only open on Tuesday - Saturday from 9:00 AM to 5:45 PM.
-                if (!await ValidatePurChaseTime(iceCreamModel.PurchaseDateTime).ConfigureAwait(false))
+                if (!await ValidatePurChaseTime(DateTime.Now).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
                     purchaseSucessViewModel.State = PurchaseStates.PurchaseTimeInvalid;
@@ -146,7 +153,7 @@
                     if (!await CheckIfIceCreamFlavourValid(flavour.IceCreamFlavour).ConfigureAwait(true))
                     {
                         purchaseSucessViewModel.IsSuccess = false;
-                        purchaseSucessViewModel.State = PurchaseStates.PurchaseBaseInvalid;
+                        purchaseSucessViewModel.State = PurchaseStates.PurchaseFlavourInvalid;
                         return purchaseSucessViewModel;
                     }
                 }
@@ -178,8 +185,14 @@
                     }
                 }
 
-                // We will not give Strawberry and Mint Chocolate Chip flavours together.
-                // We will not give Cookies And Cream, Moose Tracks, and Vanilla together.
+                // Validate We will not give Strawberry and Mint Chocolate Chip flavours together.
+                if (!await ValidateFlavourCombination(iceCreamModel.Flavours.Select(x => x.IceCreamFlavour).ToList(), Constants.FlavoursRestrictedTogether).ConfigureAwait(false))
+                {
+                    purchaseSucessViewModel.IsSuccess = false;
+                    purchaseSucessViewModel.State = PurchaseStates.PurchaseFlavourCombinationInvalid;
+                    return purchaseSucessViewModel;
+                }
+
                 // We will give any combination of two of the above though. I.e.Cookies And Cream and Vanilla are ok together.
                 // The only exception to the rule above is if the base is a Cake Cone.
                 if (!(iceCreamModel.Base.IceCreamBase == IceCreamBase.CakeCone))
@@ -187,14 +200,6 @@
                     List<IceCreamFlavour> flavours = new List<IceCreamFlavour>();
 
                     flavours = iceCreamModel.Flavours.Select(x => x.IceCreamFlavour).ToList();
-
-                    // Validate We will not give Strawberry and Mint Chocolate Chip flavours together.
-                    if (!await ValidateFlavourCombination(flavours, Constants.FlavoursRestrictedTogether).ConfigureAwait(false))
-                    {
-                        purchaseSucessViewModel.IsSuccess = false;
-                        purchaseSucessViewModel.State = PurchaseStates.PurchaseFlavourCombinationInvalid;
-                        return purchaseSucessViewModel;
-                    }
 
                     // Validate We will not give Cookies And Cream, Moose Tracks, and Vanilla together.
                     if (!await ValidateFlavourCombination(flavours, Constants.FlavoursRestrictedTogether2).ConfigureAwait(false))
@@ -213,7 +218,8 @@
                 if (!await ValidatePurchaseAmount(iceCreamModel.PurchaseAmount, baseCost + flavourCost).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
-                    purchaseSucessViewModel.State = PurchaseStates.PurchaseAmountInvalid;
+                    purchaseSucessViewModel.State = PurchaseStates.PurchaseAmountLessThanCost;
+                    purchaseSucessViewModel.CostOfIceCream = baseCost + flavourCost;
                     return purchaseSucessViewModel;
                 }
 
@@ -249,18 +255,25 @@
                 }
                 else
                 {
-                    throw new Exception($"The purchase Amount {userPurchaseAmount} must be greater than equal to cost of ice cream {calculatedPurchaseAmount}.");
+                    return await Task.FromResult(false).ConfigureAwait(false);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
         public async Task<bool> CheckIfIceCreamBaseValid(IceCreamBase iceCreamBase)
         {
-            return await Task.FromResult(Enum.IsDefined(typeof(IceCreamBase), iceCreamBase)).ConfigureAwait(false);
+            try
+            {
+                return await Task.FromResult(Enum.IsDefined(typeof(IceCreamBase), iceCreamBase)).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public async Task<decimal> CalculateRefund(decimal userPurchaseAmount, decimal calculatedPurchaseAmount)
@@ -276,52 +289,105 @@
 
                 return await Task.FromResult(userPurchaseAmount - calculatedPurchaseAmount).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
         public async Task<bool> CheckIfIceCreamFlavourValid(IceCreamFlavour iceCreamFlavour)
         {
-            return await Task.FromResult(Enum.IsDefined(typeof(IceCreamFlavour), iceCreamFlavour)).ConfigureAwait(false);
+            try
+            {
+                return await Task.FromResult(Enum.IsDefined(typeof(IceCreamFlavour), iceCreamFlavour)).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public async Task<bool> ValidateFlavourCombination(ICollection<IceCreamFlavour> selectediceCreamFlavours, ICollection<IceCreamFlavour> restrictedIceCreamFlavours)
         {
-            if (selectediceCreamFlavours == null)
+            try
             {
-                return await Task.FromResult(false).ConfigureAwait(false);
+                if (selectediceCreamFlavours == null)
+                {
+                    return await Task.FromResult(false).ConfigureAwait(false);
+                }
+
+                List<bool> flavourPresent = new List<bool>();
+
+                foreach (IceCreamFlavour flavour in restrictedIceCreamFlavours)
+                {
+                    flavourPresent.Add(selectediceCreamFlavours.Contains(flavour));
+                }
+
+                return await Task.FromResult(!flavourPresent.All(x => x == true)).ConfigureAwait(false);
             }
-
-            List<bool> flavourPresent = new List<bool>();
-
-            foreach (IceCreamFlavour flavour in restrictedIceCreamFlavours)
+            catch
             {
-                flavourPresent.Add(selectediceCreamFlavours.Contains(flavour));
+                throw;
             }
-
-            return await Task.FromResult(!flavourPresent.All(x => x == true)).ConfigureAwait(false);
         }
 
         public async Task<bool> ValidateIceCreamAndFlavourCombination(ICollection<FlavourInformation> flavours, IceCreamBase iceCreamBase)
         {
-            if (iceCreamBase != IceCreamBase.Cup && flavours?.Count >= 4)
+            try
             {
-                return await Task.FromResult(false).ConfigureAwait(false);
-            }
+                if (iceCreamBase != IceCreamBase.Cup && flavours?.Count >= 4)
+                {
+                    return await Task.FromResult(false).ConfigureAwait(false);
+                }
 
-            return await Task.FromResult(true).ConfigureAwait(false);
+                return await Task.FromResult(true).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public async Task<bool> ValidateCookieDoughflavourtheSugarConeBase(FlavourInformation flavour, IceCreamBase iceCreamBase)
         {
-            if (iceCreamBase == IceCreamBase.SugarCone && flavour?.IceCreamFlavour == IceCreamFlavour.CookieDough)
+            try
             {
-                return await Task.FromResult(false).ConfigureAwait(false);
-            }
+                if (iceCreamBase == IceCreamBase.SugarCone && flavour?.IceCreamFlavour == IceCreamFlavour.CookieDough)
+                {
+                    return await Task.FromResult(false).ConfigureAwait(false);
+                }
 
-            return await Task.FromResult(true).ConfigureAwait(false);
+                return await Task.FromResult(true).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<string> HandleErrorState(PurchaseInformation purchase)
+        {
+            switch (purchase?.State)
+            {
+                case PurchaseStates.PurchaseAmountInvalid:
+                    return await Task.FromResult($"Invalid purchaseAmount!. Please check the purchase Amount {purchase.IceCreamOrder.PurchaseAmount}").ConfigureAwait(false);
+                case PurchaseStates.PurchaseAmountLessThanCost:
+                    return await Task.FromResult($"Invalid purchaseAmount!. Purchase Amount {purchase.IceCreamOrder.PurchaseAmount} must be greater than the cost amount {purchase.CostOfIceCream}.").ConfigureAwait(false);
+                case PurchaseStates.PurchaseTimeInvalid:
+                    return await Task.FromResult($"Invalid purchase time. Please visit between store hours.").ConfigureAwait(false);
+                case PurchaseStates.PurchaseBaseInvalid:
+                    return await Task.FromResult($"Invalid ice cream base. Please select a valid base.").ConfigureAwait(false);
+                case PurchaseStates.PurchaseFlavourInvalid:
+                    return await Task.FromResult($"Invalid ice cream flavour. Please select a valid flavour.").ConfigureAwait(false);
+                case PurchaseStates.PurchaseNumberOfScoopsInvalid:
+                    return await Task.FromResult($"Invalid number of scoops. Please select valid number of scoops").ConfigureAwait(false);
+                case PurchaseStates.PurchaseBaseFlavourCombinationInvalid:
+                    return await Task.FromResult($"Invalid base and flavour combination. Please select a different combination").ConfigureAwait(false);
+                case PurchaseStates.PurchaseFlavourCombinationInvalid:
+                    return await Task.FromResult($"Invalid flavour combination. Please select a different combination").ConfigureAwait(false);
+                default:
+                    return string.Empty;
+            }
         }
     }
 }

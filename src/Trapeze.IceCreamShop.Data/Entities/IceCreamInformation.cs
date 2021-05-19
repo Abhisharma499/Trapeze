@@ -32,7 +32,7 @@ namespace Trapeze.IceCreamShop.Data.Entities
         /// <summary>
         /// Gets the date and time of the purchase.
         /// </summary>
-        public DateTime PurchaseDateTime { get; set; }
+        public DateTime PurchaseDateTime { get;}
 
         /// <summary>
         /// Gets or sets the base of the ice cream.

@@ -13,6 +13,7 @@ namespace Trapeze.IceCreamShop.Enums
         PurchaseAmountLessThanCost,
         PurchaseTimeInvalid,
         PurchaseBaseInvalid,
+        PurchaseFlavourInvalid,
         PurchaseNumberOfScoopsInvalid,
         PurchaseBaseFlavourCombinationInvalid,
         PurchaseFlavourCombinationInvalid,

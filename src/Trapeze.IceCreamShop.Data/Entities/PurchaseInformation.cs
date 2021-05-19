@@ -14,5 +14,11 @@
         public PurchaseStates State { get; set; }
 
         public string NameOfBuyer { get; set; }
+
+        [JsonIgnore]
+        public IceCreamInformation IceCreamOrder { get; set; }
+
+        [JsonIgnore]
+        public decimal CostOfIceCream { get; set; }
     }
 }

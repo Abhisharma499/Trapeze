@@ -9,7 +9,6 @@ namespace Trapeze.IceCreamShop.Api.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Trapeze.IceCreamShop.Data.BAL;
-    using Trapeze.IceCreamShop.Data.DAL;
     using Trapeze.IceCreamShop.Data.Entities;
 
     /// <summary>
@@ -19,8 +18,8 @@ namespace Trapeze.IceCreamShop.Api.Controllers
     [Route("[controller]")]
     public class IceCreamStoreController : ControllerBase
     {
-
         private readonly IIceCreamBusinessService _iIceCreamBusinessService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="IceCreamStoreController"/> class.
         /// </summary>
@@ -47,7 +46,7 @@ namespace Trapeze.IceCreamShop.Api.Controllers
                 }
                 else
                 {
-                    return new JsonResult(new { Error = purchaseModel.State.ToString() })
+                    return new JsonResult(new { Error = _iIceCreamBusinessService.HandleErrorState(purchaseModel) })
                     {
                         StatusCode = StatusCodes.Status400BadRequest
                     };

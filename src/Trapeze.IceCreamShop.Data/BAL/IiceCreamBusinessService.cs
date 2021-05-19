@@ -33,5 +33,7 @@
         Task<bool> ValidateCookieDoughflavourtheSugarConeBase(FlavourInformation flavour, IceCreamBase iceCreamBase);
 
         Task<bool> ValidateFlavourCombination(ICollection<IceCreamFlavour> allVailableflavours, ICollection<IceCreamFlavour> selectedFlavours);
+
+        Task<string> HandleErrorState(PurchaseInformation purchaseState);
     }
 }
