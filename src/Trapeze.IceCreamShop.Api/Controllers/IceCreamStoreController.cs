@@ -20,13 +20,13 @@ namespace Trapeze.IceCreamShop.Api.Controllers
     public class IceCreamStoreController : ControllerBase
     {
 
-        private readonly IIceCreamBusinessService _IIceCreamBusinessService;
+        private readonly IIceCreamBusinessService _iIceCreamBusinessService;
         /// <summary>
         /// Initializes a new instance of the <see cref="IceCreamStoreController"/> class.
         /// </summary>
-        public IceCreamStoreController(IIceCreamBusinessService IIceCreamBusinessService)
+        public IceCreamStoreController(IIceCreamBusinessService iIceCreamBusinessService)
         {
-            _IIceCreamBusinessService = IIceCreamBusinessService;
+            _iIceCreamBusinessService = iIceCreamBusinessService;
         }
 
         [HttpPost]
@@ -34,7 +34,7 @@ namespace Trapeze.IceCreamShop.Api.Controllers
         {
             try
             {
-                PurchaseInformation purchaseModel = await _IIceCreamBusinessService.PurchaseIceCream(model).ConfigureAwait(true);
+                PurchaseInformation purchaseModel = await _iIceCreamBusinessService.PurchaseIceCream(model).ConfigureAwait(true);
 
                 if (purchaseModel != null && purchaseModel.IsSuccess && purchaseModel.State == Enums.PurchaseStates.PurchaseSucess)
                 {

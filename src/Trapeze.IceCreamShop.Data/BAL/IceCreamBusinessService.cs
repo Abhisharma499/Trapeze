@@ -124,6 +124,7 @@
 
             try
             {
+                // The ice cream store is only open on Tuesday - Saturday from 9:00 AM to 5:45 PM.
                 if (!await ValidatePurChaseTime(iceCreamModel.PurchaseDateTime).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
@@ -131,6 +132,7 @@
                     return purchaseSucessViewModel;
                 }
 
+                // The ice cream base must be from the list of available bases.
                 if (!await CheckIfIceCreamBaseValid(iceCreamModel.Base.IceCreamBase).ConfigureAwait(true))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
@@ -138,6 +140,7 @@
                     return purchaseSucessViewModel;
                 }
 
+                // The ice cream flavours must be from the list of available flavours.
                 foreach (var flavour in iceCreamModel.Flavours)
                 {
                     if (!await CheckIfIceCreamFlavourValid(flavour.IceCreamFlavour).ConfigureAwait(true))
@@ -148,6 +151,7 @@
                     }
                 }
 
+                // Max scoops can be 4
                 if (!await ValidateNumberOfScoops(iceCreamModel.Flavours).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
@@ -155,7 +159,7 @@
                     return purchaseSucessViewModel;
                 }
 
-                // Validate Only a cup of ice cream can have 4 scoops.
+                // Only a cup of ice cream can have 4 scoops.
                 if (!await ValidateIceCreamAndFlavourCombination(iceCreamModel.Flavours, iceCreamModel.Base.IceCreamBase).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
@@ -163,7 +167,7 @@
                     return purchaseSucessViewModel;
                 }
 
-                // Validate ValidateCookieDoughflavourtheSugarConeBase
+                // We will not give Cookie Dough flavour in the Sugar Cone base.
                 foreach (var flavour in iceCreamModel.Flavours)
                 {
                     if (!await ValidateCookieDoughflavourtheSugarConeBase(flavour, iceCreamModel.Base.IceCreamBase).ConfigureAwait(false))
@@ -205,6 +209,7 @@
 
                 decimal flavourCost = await CalculateFlavoursCost(iceCreamModel.Flavours).ConfigureAwait(false);
 
+                // The amount passed in to purchase must match or be greater than the price
                 if (!await ValidatePurchaseAmount(iceCreamModel.PurchaseAmount, baseCost + flavourCost).ConfigureAwait(false))
                 {
                     purchaseSucessViewModel.IsSuccess = false;
@@ -220,6 +225,10 @@
                 {
                     purchaseSucessViewModel.IsSuccess = true;
                     purchaseSucessViewModel.State = PurchaseStates.PurchaseSucess;
+                }
+                else
+                {
+                    purchaseSucessViewModel.State = PurchaseStates.PurchaseDataBaseInsertionError;
                 }
 
                 return await Task.FromResult(purchaseSucessViewModel).ConfigureAwait(false);
