@@ -4,7 +4,6 @@
 namespace Trapeze.IceCreamShop.Api.Controllers
 {
     using System;
-    using System.Text;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -35,18 +34,16 @@ namespace Trapeze.IceCreamShop.Api.Controllers
             {
                 PurchaseInformation purchaseModel = await _iIceCreamBusinessService.PurchaseIceCream(model).ConfigureAwait(true);
 
-                if (purchaseModel != null && purchaseModel.IsSuccess && purchaseModel.State == Enums.PurchaseStates.Sucess)
+                if (purchaseModel.State == Enums.PurchaseStates.Success)
                 {
-                    purchaseModel.NameOfBuyer = await _iIceCreamBusinessService.GetUserName(HttpContext).ConfigureAwait(false);
-
-                    return new JsonResult(new { purchaseModel })
+                    return new JsonResult(new { Refund = purchaseModel.Refund, nameOfBuyer= Util.Utils.GetUserName(HttpContext) })
                     {
                         StatusCode = StatusCodes.Status201Created
                     };
                 }
                 else
                 {
-                    return new JsonResult(new { ErrorMessage = await _iIceCreamBusinessService.HandleErrorState(purchaseModel).ConfigureAwait(false) })
+                    return new JsonResult(new { ErrorMessage = _iIceCreamBusinessService.GetErrorMessageByPurchaseState(purchaseModel) })
                     {
                         StatusCode = StatusCodes.Status400BadRequest
                     };
@@ -59,18 +56,6 @@ namespace Trapeze.IceCreamShop.Api.Controllers
                     StatusCode = StatusCodes.Status500InternalServerError
                 };
             }
-        }
-
-        private string GetUserName()
-        {
-            string authHeader = HttpContext?.Request.Headers["Authorization"];
-            string encodedUserNamePassword = authHeader.Substring("Basic".Length).Trim();
-            Encoding encoding = Encoding.GetEncoding("UTF-8");
-            string userNameAndPassword = encoding.GetString(Convert.FromBase64String(encodedUserNamePassword));
-            int index = userNameAndPassword.IndexOf(":");
-            var userName = userNameAndPassword.Substring(0, index);
-
-            return userName;
         }
     }
 }

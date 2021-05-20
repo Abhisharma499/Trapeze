@@ -2,7 +2,7 @@
 {
     public enum PurchaseStates
     {
-        Sucess,
+        Success,
         AmountInvalid,
         AmountLessThanCost,
         TimeInvalid,
