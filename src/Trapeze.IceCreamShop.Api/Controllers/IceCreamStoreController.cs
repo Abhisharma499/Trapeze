@@ -46,7 +46,7 @@ namespace Trapeze.IceCreamShop.Api.Controllers
                 }
                 else
                 {
-                    return new JsonResult(new { Error = _iIceCreamBusinessService.HandleErrorState(purchaseModel) })
+                    return new JsonResult(new { ErrorMessage = await _iIceCreamBusinessService.HandleErrorState(purchaseModel).ConfigureAwait(false) })
                     {
                         StatusCode = StatusCodes.Status400BadRequest
                     };
