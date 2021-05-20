@@ -4,14 +4,15 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Trapeze.IceCreamShop.Data.DAL;
     using Trapeze.IceCreamShop.Data.Entities;
     using Trapeze.IceCreamShop.Enums;
 
     public class IceCreamBusinessService : IIceCreamBusinessService
     {
-        private readonly DAL.IIceCreamDataService _iceCreamDataService;
+        private readonly IIceCreamDataService _iceCreamDataService;
 
-        public IceCreamBusinessService(DAL.IIceCreamDataService iceCreamDataService)
+        public IceCreamBusinessService(IIceCreamDataService iceCreamDataService)
         {
             _iceCreamDataService = iceCreamDataService;
         }
